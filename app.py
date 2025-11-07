@@ -178,6 +178,17 @@ st.dataframe(
     hide_index=True
 )
 
+st.caption("桶2 收入策略 (只读)")
+st.dataframe(
+    df_b2_processed,
+    column_config={ # 确保这里也格式化了
+        "margin_used": st.column_config.NumberColumn("占用保证金", format="$ %.2f"),
+        "target_premium_monthly": st.column_config.NumberColumn("月目标收入", format="$ %.2f"),
+    },
+    use_container_width=True,
+    hide_index=True
+)
+
 st.caption("桶3 实时市值 (只读)")
 st.dataframe(
     df_b3_processed,
