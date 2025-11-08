@@ -6,13 +6,13 @@ from streamlit_gsheets import GSheetsConnection
 
 # --- 1. 页面配置 ---
 st.set_page_config(
-    page_title="三桶投资组合仪表板",
-    page_icon="💰",
+    page_title="投资组合报告",
+    page_icon="💚",
     layout="wide"
 )
 
 # --- 2. 标题 ---
-st.title("💰 我的三桶投资组合仪表板 (V2.3 - 增强版)")
+st.title("🟢 当前投资组合")
 st.caption("数据将从您的 Google Sheet 读取。编辑后，请在 '交易日志 & 编辑' 选项卡中点击 '保存'。")
 
 # --- 3. Google Sheets 连接 ---
@@ -168,11 +168,11 @@ if 'loaded_data' not in st.session_state:
     st.session_state.loaded_data = True
 
 # --- 8. 创建选项卡 ---
-tab_dash, tab_journal, tab_settings = st.tabs(["📊 仪表板 (Dashboard)", "✍️ 交易日志 & 编辑 (Trade Journal & Edit)", "⚙️ 设置 (Settings)"])
+tab_dash, tab_journal, tab_settings = st.tabs(["当前持仓", "交易日志", "⚙️ 设置"])
 
 # --- 9. 交易日志 & 编辑 选项卡 ---
 with tab_journal:
-    st.header("🪣 桶1：长期持仓核心 (在此编辑)")
+    st.header("❇️桶1：长期持仓核心 (在此编辑)")
     st.info("💡 对于期权 (Call/Put)，请在 'manual_market_value' 列手动填入当前市值。")
     edited_b1 = st.data_editor(
         st.session_state.df_b1,
@@ -186,8 +186,7 @@ with tab_journal:
         key="editor_b1"
     )
 
-    st.header("🪣 桶2：收入机器 - 交易日志 (在此编辑)")
-    st.info("💡 **新增功能**：'估计平仓成本' 列用于计算Open仓位的**浮动盈亏**。输入当前如果平仓需要的成本。")
+    st.header("🍀💵桶2：收入机器 - 交易日志 (在此编辑)")
     st.caption("例如：你卖了Bull Put Spread收$1000，现在市场价格是$600，则填入600。浮动盈亏 = 1000 - 600 = +$400")
     
     edited_b2 = st.data_editor(
@@ -205,7 +204,7 @@ with tab_journal:
         key="editor_b2"
     )
 
-    st.header("🪣 桶3：投机交易 (在此编辑)")
+    st.header("🤑桶3：投机交易 (在此编辑)")
     st.info("💡 对于期权 (Call/Put)，请在 'manual_market_value' 列手动填入当前市值。")
     edited_b3 = st.data_editor(
         st.session_state.df_b3,
