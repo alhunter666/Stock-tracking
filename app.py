@@ -176,6 +176,8 @@ if 'loaded_data' not in st.session_state:
         df_b2_loaded['estimated_cost_to_close'] = pd.to_numeric(df_b2_loaded['estimated_cost_to_close'], errors='coerce').fillna(0.0)
         # 强制将 expiration_date 转换为日期时间对象，无效值（如空单元格）将变为 NaT (Not a Time)
         df_b2_loaded['expiration_date'] = pd.to_datetime(df_b2_loaded['expiration_date'], errors='coerce')
+        df_b2_loaded['expiration_date'] = df_b2_loaded['expiration_date'].apply(lambda x: None if pd.isna(x) else x)
+        
     except Exception as e:
         st.error(f"加载桶2数据时类型转换失败: {e}")
         st.info("请检查您 Google Sheet 'bucket2' 工作表中的数字和日期列。")
