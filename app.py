@@ -42,13 +42,16 @@ def get_stock_price(ticker):
 def load_settings_from_gsheet():
     """🆕 从 Google Sheets 加载设置参数"""
     try:
-        df_settings = conn.read(worksheet="设置", usecols=list(range(2)), ttl=60)
+        df_settings = conn.read(worksheet="settings", usecols=list(range(2)), ttl=60)   
         # 转换为字典
         settings = {}
         for _, row in df_settings.iterrows():
-            param_name = row.iloc[0]
-            param_value = row.iloc[1]
-            settings[param_name] = param_value
+            try:  
+                param_name = str(row.iloc[0])   
+                param_value = row.iloc[1]
+                settings[param_name] = param_value
+            except Exception:   
+                continue  
         return settings
     except Exception as e:
         st.warning(f"无法读取设置表: {e}. 将使用默认设置。")
@@ -62,10 +65,10 @@ def load_settings_from_gsheet():
 def load_data_from_gsheet():
     """从 Google Sheets 加载三个桶的数据"""
     try:
-        df_b1 = conn.read(worksheet="桶1", usecols=list(range(6)), ttl=5)
+        df_b1 = conn.read(worksheet="bucket1", usecols=list(range(6)), ttl=5)
         # 桶2现在有9列 (添加了 estimated_cost_to_close)
-        df_b2 = conn.read(worksheet="桶2", usecols=list(range(9)), ttl=5)
-        df_b3 = conn.read(worksheet="桶3", usecols=list(range(6)), ttl=5)
+        df_b2 = conn.read(worksheet="bucket2", usecols=list(range(9)), ttl=5)
+        df_b3 = conn.read(worksheet="bucket3", usecols=list(range(6)), ttl=5)
 
         # 确保必要列存在
         if 'manual_market_value' not in df_b1.columns:
@@ -231,9 +234,9 @@ with tab_journal:
                 df_to_save_b2 = edited_b2.reindex(columns=cols_b2, fill_value='')
                 df_to_save_b3 = edited_b3.reindex(columns=cols_b3, fill_value=0.0)
 
-                conn.update(worksheet="桶1", data=df_to_save_b1)
-                conn.update(worksheet="桶2", data=df_to_save_b2)
-                conn.update(worksheet="桶3", data=df_to_save_b3)
+                conn.update(worksheet="bucket1", data=df_to_save_b1)
+                conn.update(worksheet="bucket2", data=df_to_save_b2)
+                conn.update(worksheet="bucket3", data=df_to_save_b3)
                 
                 st.session_state.df_b1 = edited_b1
                 st.session_state.df_b2 = edited_b2
@@ -543,12 +546,12 @@ with tab_settings:
             try:
                 # 准备保存的数据
                 settings_to_save = pd.DataFrame({
-                    '参数名称': edited_settings['参数名称'],
-                    '值': edited_settings['当前值']
+                    'parameter_name': edited_settings['parameter_name'],
+                    'value': edited_settings['value']
                 })
                 
                 # 保存到Google Sheet
-                conn.update(worksheet="设置", data=settings_to_save)
+                conn.update(worksheet="setting", data=settings_to_save)
                 
                 # 更新session state
                 for _, row in edited_settings.iterrows():
