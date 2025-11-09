@@ -165,8 +165,24 @@ if 'loaded_data' not in st.session_state:
     st.session_state.settings = load_settings_from_gsheet()
     # 加载桶数据
     df_b1_loaded, df_b2_loaded, df_b3_loaded = load_data_from_gsheet()
+    
+    # ------------------- 关键修复 V3.1 -------------------
+    # 立即清理桶2的数据类型，防止 data_editor 因类型不匹配而崩溃
+    # （桶1和桶3在 calculate_market_value 函数中已有清理）
+    try:
+        df_b2_loaded['margin_used'] = pd.to_numeric(df_b2_loaded['margin_used'], errors='coerce').fillna(0.0)
+        df_b2_loaded['premium_received'] = pd.to_numeric(df_b2_loaded['premium_received'], errors='coerce').fillna(0.0)
+        df_b2_loaded['cost_to_close'] = pd.to_numeric(df_b2_loaded['cost_to_close'], errors='coerce').fillna(0.0)
+        df_b2_loaded['estimated_cost_to_close'] = pd.to_numeric(df_b2_loaded['estimated_cost_to_close'], errors='coerce').fillna(0.0)
+        # 强制将 expiration_date 转换为日期时间对象，无效值（如空单元格）将变为 NaT (Not a Time)
+        df_b2_loaded['expiration_date'] = pd.to_datetime(df_b2_loaded['expiration_date'], errors='coerce')
+    except Exception as e:
+        st.error(f"加载桶2数据时类型转换失败: {e}")
+        st.info("请检查您 Google Sheet 'bucket2' 工作表中的数字和日期列。")
+    # ----------------- END FIX V3.1 -----------------
+
     st.session_state.df_b1 = df_b1_loaded
-    st.session_state.df_b2 = df_b2_loaded
+    st.session_state.df_b2 = df_b2_loaded # ⬅️ 现在是清理过的数据
     st.session_state.df_b3 = df_b3_loaded
     st.session_state.loaded_data = True
 
