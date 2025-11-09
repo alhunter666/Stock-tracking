@@ -42,7 +42,7 @@ def get_stock_price(ticker):
 def load_settings_from_gsheet():
     """🆕 从 Google Sheets 加载设置参数"""
     try:
-        df_settings = conn.read(worksheet="settings", usecols=list(range(2)), ttl=600)   
+        df_settings = conn.read(worksheet="setting", usecols=list(range(2)), ttl=600)   
         # 转换为字典
         settings = {}
         for _, row in df_settings.iterrows():
